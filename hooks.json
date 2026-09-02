@@ -1,0 +1,24 @@
+{
+  "ponytail": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node ./ponytail-pre-invoke.js",
+        "timeout": 5
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "invoke_subagent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./ponytail-subagent-guard.js",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
