@@ -37,6 +37,7 @@ delete process.env.COPILOT_PLUGIN_DATA;
 // A leaked subagent matcher would scope the inject-into-every-subagent assertions.
 delete process.env.PONYTAIL_SUBAGENT_MATCHER;
 delete process.env.QODER_SESSION_ID;
+delete process.env.ZCODE_APP_VERSION;
 // A leaked project dir would move the flag into ponytail-modes/ (#662).
 delete process.env.CLAUDE_PROJECT_DIR;
 // Cursor sets these only for hook processes, but a suite launched from a Cursor
@@ -121,7 +122,7 @@ result = run('ponytail-activate.js', codexEnv);
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.readFileSync(codexState, 'utf8'), 'ultra');
 let output = JSON.parse(result.stdout);
-assert.equal(output.systemMessage, 'PONYTAIL:ULTRA');
+assert.equal(output.systemMessage, undefined, 'Codex must not emit systemMessage — Codex renders it as a yellow warning: line (#605)');
 assert.equal(output.additionalContext, undefined, 'Codex must not emit additionalContext at top level (#573)');
 assert.equal(output.hookSpecificOutput.hookEventName, 'SessionStart');
 assert.match(
@@ -137,7 +138,12 @@ result = run(
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.readFileSync(codexState, 'utf8'), 'lite');
 output = JSON.parse(result.stdout);
-assert.equal(output.systemMessage, 'PONYTAIL:LITE');
+assert.equal(output.systemMessage, undefined, 'Codex must not emit systemMessage (#605)');
+assert.match(
+  output.hookSpecificOutput.additionalContext,
+  /level: lite/,
+  'mode still surfaces via the hook context line',
+);
 
 // Querying bare @ponytail should report the active level ('lite') without resetting it to default ('ultra')
 result = run(
@@ -163,7 +169,12 @@ result = run(
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.existsSync(codexState), false);
 output = JSON.parse(result.stdout);
-assert.equal(output.systemMessage, 'PONYTAIL:OFF');
+assert.equal(output.systemMessage, undefined, 'Codex must not emit systemMessage (#605)');
+assert.match(
+  output.hookSpecificOutput.additionalContext,
+  /PONYTAIL MODE OFF/,
+  'deactivation still surfaces via the hook context line',
+);
 
 // A request that merely mentions "normal mode" must not deactivate ponytail.
 result = run('ponytail-mode-tracker.js', codexEnv, JSON.stringify({ prompt: '@ponytail lite' }));
@@ -335,14 +346,14 @@ assert.equal(result.status, 0, result.stderr);
 assert.equal(result.stdout, '', 'SubagentStart must stay silent when ponytail is off');
 
 // Codex shares claude-codex-hooks.json, so SubagentStart is reachable under Codex
-// too — assert the codex branch emits the badge plus hookSpecificOutput.
+// too — assert the codex branch emits hookSpecificOutput and no systemMessage (#605).
 const subCodex = path.join(temp, 'sub-codex');
 fs.mkdirSync(subCodex, { recursive: true });
 fs.writeFileSync(path.join(subCodex, '.ponytail-active'), 'full');
 result = run('ponytail-subagent.js', { HOME: subHome, USERPROFILE: subHome, PLUGIN_DATA: subCodex });
 assert.equal(result.status, 0, result.stderr);
 output = JSON.parse(result.stdout);
-assert.equal(output.systemMessage, 'PONYTAIL:FULL');
+assert.equal(output.systemMessage, undefined, 'Codex must not emit systemMessage (#605)');
 assert.equal(output.additionalContext, undefined, 'Codex must not emit additionalContext at top level (#573)');
 assert.equal(output.hookSpecificOutput.hookEventName, 'SubagentStart');
 assert.match(output.hookSpecificOutput.additionalContext, /PONYTAIL MODE ACTIVE — level: full/);
@@ -495,6 +506,59 @@ assert.match(
   output.hookSpecificOutput.additionalContext,
   /PONYTAIL MODE ACTIVE — level: full/,
 );
+
+// Zcode: parses hook stdout as strict JSON, so the native-Claude raw-text
+// SessionStart output is silently discarded (#798). Same hookSpecificOutput
+// shape as Qoder, but Zcode does have SessionStart — activate.js injects the
+// ruleset at startup and the mode-tracker only speaks up on mode switches.
+const zcodeHome = path.join(temp, 'zcode-home');
+const zcodeState = path.join(zcodeHome, '.claude', '.ponytail-active');
+fs.mkdirSync(zcodeHome, { recursive: true });
+
+const zcodeEnv = {
+  HOME: zcodeHome,
+  USERPROFILE: zcodeHome,
+  ZCODE_APP_VERSION: '3.10.2',
+  PONYTAIL_DEFAULT_MODE: 'full',
+};
+
+// SessionStart: flag written, ruleset emitted as hookSpecificOutput JSON.
+result = run('ponytail-activate.js', zcodeEnv);
+assert.equal(result.status, 0, result.stderr);
+assert.equal(fs.readFileSync(zcodeState, 'utf8'), 'full');
+output = JSON.parse(result.stdout);
+assert.equal(output.systemMessage, undefined, 'Zcode must not emit systemMessage');
+assert.equal(output.hookSpecificOutput.hookEventName, 'SessionStart');
+assert.match(
+  output.hookSpecificOutput.additionalContext,
+  /PONYTAIL MODE ACTIVE — level: full/,
+);
+
+// '@ponytail lite': mode tracker updates the flag and confirms via JSON.
+result = run(
+  'ponytail-mode-tracker.js',
+  zcodeEnv,
+  JSON.stringify({ prompt: '@ponytail lite' }),
+);
+assert.equal(result.status, 0, result.stderr);
+assert.equal(fs.readFileSync(zcodeState, 'utf8'), 'lite');
+output = JSON.parse(result.stdout);
+assert.equal(output.hookSpecificOutput.hookEventName, 'UserPromptSubmit');
+assert.match(
+  output.hookSpecificOutput.additionalContext,
+  /PONYTAIL MODE CHANGED — level: lite/,
+);
+
+// "stop ponytail": deactivates, clears flag, short confirmation as JSON.
+result = run(
+  'ponytail-mode-tracker.js',
+  zcodeEnv,
+  JSON.stringify({ prompt: 'stop ponytail' }),
+);
+assert.equal(result.status, 0, result.stderr);
+assert.equal(fs.existsSync(zcodeState), false, 'flag must be cleared after stop ponytail');
+output = JSON.parse(result.stdout);
+assert.equal(output.hookSpecificOutput.additionalContext, 'PONYTAIL MODE OFF');
 // writeDefaultMode must merge into existing config, not overwrite it (#490).
 const mergeHome = path.join(temp, 'merge-home');
 const mergeConfigDir = path.join(mergeHome, '.config', 'ponytail');
@@ -669,6 +733,28 @@ assert.equal(
   run('ponytail-mode-tracker.js', repoB, JSON.stringify({ prompt: '/ponytail off' }));
   assert.equal(subagentLevel(repoB), null, '/ponytail off works in repo B');
   assert.equal(subagentLevel(repoA), 'ultra', '/ponytail off in repo B leaves repo A alone');
+}
+
+// #639: bare /ponytail switches ponytail on when it is off, and only reports
+// (never resets) the level when it is already on.
+{
+  const bareHome = path.join(temp, 'bare-home');
+  const bareFlag = path.join(bareHome, '.claude', '.ponytail-active');
+  fs.mkdirSync(path.dirname(bareFlag), { recursive: true });
+  const bareEnv = { HOME: bareHome, USERPROFILE: bareHome };
+  const bare = (env) => run('ponytail-mode-tracker.js', env, JSON.stringify({ prompt: '/ponytail' }));
+
+  fs.writeFileSync(bareFlag, 'ultra');
+  assert.match(bare(bareEnv).stdout, /PONYTAIL MODE ACTIVE — level: ultra/);
+  assert.equal(fs.readFileSync(bareFlag, 'utf8'), 'ultra', 'checking the level must not reset ultra');
+
+  fs.unlinkSync(bareFlag);
+  assert.match(bare(bareEnv).stdout, /PONYTAIL MODE CHANGED — level: full/);
+  assert.equal(fs.readFileSync(bareFlag, 'utf8'), 'full', 'bare /ponytail switches an off session on');
+
+  fs.unlinkSync(bareFlag);
+  bare({ ...bareEnv, PONYTAIL_DEFAULT_MODE: 'off' });
+  assert.equal(fs.readFileSync(bareFlag, 'utf8'), 'full', 'an off default still switches on at full');
 }
 
 console.log('hook compatibility checks passed');

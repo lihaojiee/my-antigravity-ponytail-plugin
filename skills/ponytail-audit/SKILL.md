@@ -27,6 +27,8 @@ Same as ponytail-review:
 Deps the stdlib or platform already ships, single-implementation interfaces,
 factories with one product, wrappers that only delegate, files exporting one
 thing, dead flags and config, hand-rolled stdlib.
+Before emitting `delete:`, grep the whole tree for the symbol, including tests,
+fixtures and string or dynamic references.
 
 ## Output
 
