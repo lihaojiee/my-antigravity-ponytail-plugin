@@ -114,7 +114,7 @@ Flojo, no negligente: la validación en límites de confianza, el manejo de pér
 
 El mayor esfuerzo que ponytail te va a pedir:
 
-Los plugins de Claude Code y Codex ejecutan dos pequeños lifecycle hooks de Node.js, así que `node` debe estar en tu PATH (nota para usuarios de Nix/nvm: debe estar en el PATH del shell no-interactivo). Si no lo está, los skills igualmente funcionan, la activación automática simplemente queda en silencio en vez de lanzar un error en cada prompt.
+Los plugins de Claude Code y Codex ejecutan dos pequeños lifecycle hooks de Node.js, así que `node` debe estar en tu PATH (nota para usuarios de Nix/nvm: debe estar en el PATH del shell no-interactivo). Si no lo está, los skills igualmente funcionan, pero cada hook muestra un error inofensivo `node: command not found`; instalar Node (o ponerlo en ese PATH) lo resuelve.
 
 ### Claude Code
 

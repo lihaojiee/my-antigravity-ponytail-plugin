@@ -37,6 +37,8 @@ delete process.env.COPILOT_PLUGIN_DATA;
 // A leaked subagent matcher would scope the inject-into-every-subagent assertions.
 delete process.env.PONYTAIL_SUBAGENT_MATCHER;
 delete process.env.QODER_SESSION_ID;
+// A leaked project dir would move the flag into ponytail-modes/ (#662).
+delete process.env.CLAUDE_PROJECT_DIR;
 // Cursor sets these only for hook processes, but a suite launched from a Cursor
 // hook would otherwise steer every case into the Cursor JSON branch (#817).
 delete process.env.CURSOR_VERSION;
@@ -50,6 +52,62 @@ const home = path.join(temp, 'home');
 const pluginData = path.join(temp, 'plugin-data');
 fs.mkdirSync(home, { recursive: true });
 
+function collectManifestCommands(file, field) {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
+  const commands = [];
+
+  function visit(value) {
+    if (!value || typeof value !== 'object') return;
+    if (typeof value[field] === 'string') commands.push(value[field]);
+    for (const child of Object.values(value)) {
+      if (Array.isArray(child)) child.forEach(visit);
+      else visit(child);
+    }
+  }
+
+  visit(manifest);
+  return commands;
+}
+
+function runShell(command, env, input = '') {
+  return spawnSync('/bin/sh', ['-c', command], {
+    env,
+    input,
+    encoding: 'utf8',
+  });
+}
+
+let result;
+
+// The shared Claude/Codex command must stay guard-free: VS Code runs it in
+// Windows PowerShell, which cannot parse `||` (see hooks-windows.test.js), so
+// it only has to run clean with node.
+// WSL2 can hand hooks a backslashed root (\home\user\...); the commands turn it
+// back into a POSIX path, so both shapes must load the script (#646).
+const roots = [root, root.split(path.sep).join('\\')];
+
+for (const command of collectManifestCommands('hooks/claude-codex-hooks.json', 'command')) {
+  for (const pluginRoot of roots) {
+    result = runShell(command, { ...process.env, HOME: home, USERPROFILE: home, CLAUDE_PLUGIN_ROOT: pluginRoot });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, '', command);
+  }
+}
+
+// Copilot CLI has a separate bash field, so it can exit 0 without node (#645).
+// `|| exit 0` also hides a broken hook, so the with-node run must leave stderr empty.
+for (const command of collectManifestCommands('hooks/copilot-hooks.json', 'bash')) {
+  for (const pluginRoot of roots) {
+    const env = { HOME: home, USERPROFILE: home, PLUGIN_ROOT: pluginRoot, COPILOT_PLUGIN_DATA: path.join(temp, 'copilot-manifest-data') };
+    result = runShell(command, { ...process.env, ...env });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(result.stderr, '', command);
+
+    result = runShell(command, { ...env, PATH: '' });
+    assert.equal(result.status, 0, result.stderr);
+  }
+}
+
 // USERPROFILE alongside HOME: os.homedir() reads USERPROFILE on Windows, HOME on POSIX.
 const codexEnv = {
   HOME: home,
@@ -59,7 +117,7 @@ const codexEnv = {
 };
 const codexState = path.join(pluginData, '.ponytail-active');
 
-let result = run('ponytail-activate.js', codexEnv);
+result = run('ponytail-activate.js', codexEnv);
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.readFileSync(codexState, 'utf8'), 'ultra');
 let output = JSON.parse(result.stdout);
@@ -502,6 +560,115 @@ try {
 } finally {
   if (prevXdgRev === undefined) delete process.env.XDG_CONFIG_HOME; else process.env.XDG_CONFIG_HOME = prevXdgRev;
   if (prevEnvModeRev === undefined) delete process.env.PONYTAIL_DEFAULT_MODE; else process.env.PONYTAIL_DEFAULT_MODE = prevEnvModeRev;
+}
+
+// Normal path stays fast: 'end' exits explicitly, so the (now ref'd) fallback
+// timer never adds its full 1000ms to a prompt that does reach EOF.
+{
+  const t0 = Date.now();
+  const r = run('ponytail-mode-tracker.js', codexEnv, JSON.stringify({ prompt: 'hi' }));
+  assert.equal(r.status, 0, r.stderr);
+  const elapsed = Date.now() - t0;
+  assert.ok(elapsed < 800, `normal path took ${elapsed}ms; ref'd fallback timer is delaying EOF exits`);
+}
+
+// #790: when stdin never emits 'end' (the Windows PowerShell wrapper can
+// swallow the piped JSON, #443), the hook must still exit on its own via the
+// 1000ms fallback timer — not hang until the host's external watchdog kills
+// it. An unref'd timer never fired in that state on Windows (a ref'd stdin
+// keeps the loop alive and the unref'd timer is never scheduled), so the
+// fallback was dead code exactly where it was needed. The timer is now ref'd;
+// the normal 'end' path exits explicitly (checked above) so the ref'd timer
+// adds no latency. spawnSync's timeout acts as the watchdog: status null /
+// SIGTERM means the hook hung past 2500ms instead of exiting on its 1s
+// fallback. The unref starvation itself is Windows-only (a POSIX pipe lets the
+// unref'd timer fire), so the ref'd-timer contract is also asserted
+// statically below.
+{
+  const hangHome = path.join(temp, 'hang-home');
+  fs.mkdirSync(hangHome, { recursive: true });
+  const hangEnv = { HOME: hangHome, USERPROFILE: hangHome, CLAUDE_CONFIG_DIR: hangHome };
+  for (const script of ['ponytail-mode-tracker.js', 'ponytail-subagent.js']) {
+    const r = spawnSync(process.execPath, [path.join(root, 'hooks', script)], {
+      env: { ...process.env, ...hangEnv },
+      timeout: 2500,
+      encoding: 'utf8',
+    });
+    assert.notEqual(r.status, null, `${script} never exited on its fallback with open stdin (#790)`);
+    assert.equal(r.status, 0, `${script} exited non-zero on its fallback (#790): ${r.stderr}`);
+    assert.ok(r.signal === null || r.signal === undefined, `${script} was watchdog-killed; 1s fallback did not fire (#790)`);
+
+    const src = fs.readFileSync(path.join(root, 'hooks', script), 'utf8');
+    assert.ok(
+      !src.includes('.unref('),
+      `${script} fallback timer must stay ref'd (#790): an unref'd timer never fires while a stuck ref'd stdin keeps the loop alive on Windows`,
+    );
+  }
+}
+
+// #736: /ponytail-review is a one-shot skill, not a session level. Persisting
+// `review` makes every later getPonytailInstructions() return a pointer line.
+const latchHome = path.join(temp, 'review-latch-home');
+const latchFlag = path.join(latchHome, '.claude', '.ponytail-active');
+fs.mkdirSync(path.dirname(latchFlag), { recursive: true });
+const latchEnv = { HOME: latchHome, USERPROFILE: latchHome };
+
+fs.writeFileSync(latchFlag, 'full');
+result = run('ponytail-mode-tracker.js', latchEnv, JSON.stringify({ prompt: '/ponytail-review' }));
+assert.equal(result.status, 0, result.stderr);
+assert.equal(
+  fs.readFileSync(latchFlag, 'utf8'),
+  'full',
+  '/ponytail-review must leave an active level untouched (#736)',
+);
+
+result = run(
+  'ponytail-mode-tracker.js',
+  latchEnv,
+  JSON.stringify({ prompt: '/ponytail:ponytail-review src/app.js' }),
+);
+assert.equal(result.status, 0, result.stderr);
+assert.equal(
+  fs.readFileSync(latchFlag, 'utf8'),
+  'full',
+  'namespaced /ponytail:ponytail-review must not latch review either (#736)',
+);
+
+fs.unlinkSync(latchFlag);
+result = run('ponytail-mode-tracker.js', latchEnv, JSON.stringify({ prompt: '/ponytail-review' }));
+assert.equal(result.status, 0, result.stderr);
+assert.equal(
+  fs.existsSync(latchFlag),
+  false,
+  '/ponytail-review must not create a review flag on a fresh session (#736)',
+);
+
+// #662/#809: two Claude Code sessions in different repos keep their own mode.
+{
+  const projHome = path.join(temp, 'per-project-home');
+  fs.mkdirSync(projHome, { recursive: true });
+  const repoA = { HOME: projHome, USERPROFILE: projHome, CLAUDE_PROJECT_DIR: '/work/repo-a' };
+  const repoB = { HOME: projHome, USERPROFILE: projHome, CLAUDE_PROJECT_DIR: '/work/repo-b' };
+  const subagentLevel = (env) => {
+    const r = run('ponytail-subagent.js', env);
+    assert.equal(r.status, 0, r.stderr);
+    if (!r.stdout) return null;
+    return JSON.parse(r.stdout).hookSpecificOutput.additionalContext.match(/level: (\w+)/)[1];
+  };
+
+  run('ponytail-activate.js', repoA);
+  run('ponytail-activate.js', { ...repoB, PONYTAIL_DEFAULT_MODE: 'off' });
+  assert.equal(subagentLevel(repoA), 'full', 'an off session in repo B must not clear repo A');
+  assert.equal(subagentLevel(repoB), null, 'repo B is off');
+
+  run('ponytail-mode-tracker.js', repoA, JSON.stringify({ prompt: '/ponytail ultra' }));
+  run('ponytail-mode-tracker.js', repoB, JSON.stringify({ prompt: '/ponytail lite' }));
+  assert.equal(subagentLevel(repoA), 'ultra');
+  assert.equal(subagentLevel(repoB), 'lite');
+
+  run('ponytail-mode-tracker.js', repoB, JSON.stringify({ prompt: '/ponytail off' }));
+  assert.equal(subagentLevel(repoB), null, '/ponytail off works in repo B');
+  assert.equal(subagentLevel(repoA), 'ultra', '/ponytail off in repo B leaves repo A alone');
 }
 
 console.log('hook compatibility checks passed');

@@ -114,7 +114,7 @@ ponytail이라면:
 
 ponytail이 당신에게 요구할 수고의 최대치:
 
-Claude Code와 Codex 플러그인은 자그마한 Node.js 라이프사이클 훅 두 개를 돌리니, `node`가 PATH에 잡혀 있어야 한다(Nix/nvm 사용자라면 비대화형 셸의 PATH에 있어야 한다). 없어도 스킬은 멀쩡히 돌아간다. 다만 늘 켜져 있던 자동 활성화가 매 프롬프트마다 에러를 뱉는 대신 조용히 비활성으로 남을 뿐이다.
+Claude Code와 Codex 플러그인은 자그마한 Node.js 라이프사이클 훅 두 개를 돌리니, `node`가 PATH에 잡혀 있어야 한다(Nix/nvm 사용자라면 비대화형 셸의 PATH에 있어야 한다). 없어도 스킬은 멀쩡히 돌아가지만, 훅이 실행될 때마다 무해한 `node: command not found` 에러가 뜬다. Node를 설치하거나 그 PATH에 넣으면 사라진다.
 
 ### Claude Code
 
