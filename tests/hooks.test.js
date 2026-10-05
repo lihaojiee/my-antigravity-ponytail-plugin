@@ -475,6 +475,23 @@ assert.match(
   /PONYTAIL MODE ACTIVE — level: full/,
 );
 
+// Bare `/ponytail` on Qoder is report-only: there's no SessionStart, so the
+// double-duty block below emits the full ruleset as the report. A second
+// confirmation here would push two JSON objects to stdout. The point is that
+// the user still gets the ruleset back as one object.
+result = run(
+  'ponytail-mode-tracker.js',
+  qoderEnv,
+  JSON.stringify({ prompt: '/ponytail' }),
+);
+assert.equal(result.status, 0, result.stderr);
+output = JSON.parse(result.stdout);
+assert.equal(output.hookSpecificOutput.hookEventName, 'UserPromptSubmit');
+assert.match(
+  output.hookSpecificOutput.additionalContext,
+  /PONYTAIL MODE ACTIVE — level: full/,
+);
+
 // /ponytail ultra: mode tracker updates flag and injects ultra ruleset.
 result = run(
   'ponytail-mode-tracker.js',
@@ -489,16 +506,26 @@ assert.match(
   /PONYTAIL MODE CHANGED — level: ultra/,
 );
 
-// "stop ponytail": deactivates, clears flag, no ruleset output.
+// "stop ponytail": deactivates and persists off so a later prompt does
+// not mistake the missing flag for first-run initialization.
 result = run(
   'ponytail-mode-tracker.js',
   qoderEnv,
   JSON.stringify({ prompt: 'stop ponytail' }),
 );
 assert.equal(result.status, 0, result.stderr);
-assert.equal(fs.existsSync(qoderState), false, 'flag must be cleared after stop ponytail');
+assert.equal(fs.readFileSync(qoderState, 'utf8'), 'off');
 output = JSON.parse(result.stdout);
 assert.equal(output.hookSpecificOutput.additionalContext, 'PONYTAIL MODE OFF');
+
+result = run(
+  'ponytail-mode-tracker.js',
+  qoderEnv,
+  JSON.stringify({ prompt: 'write another function' }),
+);
+assert.equal(result.status, 0, result.stderr);
+assert.equal(result.stdout, '', 'Qoder must stay off on later prompts');
+assert.equal(fs.readFileSync(qoderState, 'utf8'), 'off');
 
 // Subagent injection via PreToolUse (task|Task matcher): when ponytail is
 // active, the subagent hook injects the ruleset. Qoder shares the same
@@ -644,6 +671,13 @@ result = run('ponytail-mode-tracker.js', defEnv, JSON.stringify({ prompt: '/pony
 assert.equal(result.status, 0, result.stderr);
 assert.equal(fs.readFileSync(defFlag, 'utf8'), 'ultra', 'plain switch must set the session mode');
 assert.equal(JSON.parse(fs.readFileSync(defConfig, 'utf8')).defaultMode, 'lite', 'plain switch must not persist the default');
+
+// An unsupported mode is a no-op: it must not reset the active session mode
+// to the configured default.
+result = run('ponytail-mode-tracker.js', defEnv, JSON.stringify({ prompt: '/ponytail ulta' }));
+assert.equal(result.status, 0, result.stderr);
+assert.equal(result.stdout, '');
+assert.equal(fs.readFileSync(defFlag, 'utf8'), 'ultra', 'invalid mode must preserve the active session mode');
 
 // review is not a valid default (#377) — the command is ignored, config unchanged.
 result = run('ponytail-mode-tracker.js', defEnv, JSON.stringify({ prompt: '/ponytail default review' }));

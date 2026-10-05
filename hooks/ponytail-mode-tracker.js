@@ -79,17 +79,19 @@ function finish() {
           } else {
             mode = getDefaultMode() === 'off' ? 'full' : getDefaultMode();
           }
-        } else {
-          mode = getDefaultMode();
         }
       }
 
       if (isReportOnly) {
-        writeHookOutput(
-          'UserPromptSubmit',
-          mode,
-          'PONYTAIL MODE ACTIVE — level: ' + mode,
-        );
+        // On Qoder the ruleset block below already reports; a second write
+        // here would put two JSON objects on stdout.
+        if (!isQoder) {
+          writeHookOutput(
+            'UserPromptSubmit',
+            mode,
+            'PONYTAIL MODE ACTIVE — level: ' + mode,
+          );
+        }
       } else if (mode && mode !== 'off') {
         setMode(mode);
         modeSwitched = true;
@@ -108,7 +110,9 @@ function finish() {
           );
         }
       } else if (mode === 'off') {
-        clearMode();
+        if (isQoder) setMode('off');
+        else clearMode();
+
         deactivated = true;
         writeHookOutput('UserPromptSubmit', 'off', 'PONYTAIL MODE OFF');
       }
@@ -116,7 +120,9 @@ function finish() {
 
     // Detect deactivation
     if (!modeSwitched && !deactivated && isDeactivationCommand(prompt)) {
-      clearMode();
+      if (isQoder) setMode('off');
+      else clearMode();
+
       deactivated = true;
       writeHookOutput('UserPromptSubmit', 'off', 'PONYTAIL MODE OFF');
     }
