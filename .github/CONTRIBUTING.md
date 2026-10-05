@@ -28,8 +28,8 @@ The PR should show:
 
 Without that, the PR gets closed, however good the idea is.
 
-[`benchmarks/agentic/run.py`](benchmarks/agentic/run.py) does the work (setup in
-[its README](benchmarks/agentic/README.md#reproduce)). The `ponytail` arm loads the plugin from
+[`benchmarks/agentic/run.py`](../benchmarks/agentic/run.py) does the work (setup in
+[its README](../benchmarks/agentic/README.md#reproduce)). The `ponytail` arm loads the plugin from
 `PONYTAIL_PLUGIN_DIR`, so run it once against a checkout of `main` and once against your branch:
 
 ```bash

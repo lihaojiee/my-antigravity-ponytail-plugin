@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="Ponytail、怠け者のシニア開発者">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-dark.png">
+    <img src="../assets/logo.png" width="220" alt="Ponytail、怠け者のシニア開発者">
   </picture>
 </p>
 
@@ -35,22 +35,22 @@
 </p>
 
 <p align="center">
-  <sub><a href="README.md">English</a> &middot; <a href="README.es.md">Español</a> &middot; <a href="README.ko.md">한국어</a> &middot; <a href="README.zh-CN.md">简体中文</a> &middot; 日本語</sub><br>
-  <sub>英語の README からの翻訳です。内容が異なる場合は<a href="README.md">英語版</a>が正です。</sub>
+  <sub><a href="../README.md">English</a> &middot; <a href="README.es.md">Español</a> &middot; <a href="README.ko.md">한국어</a> &middot; <a href="README.zh-CN.md">简体中文</a> &middot; 日本語</sub><br>
+  <sub>英語の README からの翻訳です。内容が異なる場合は<a href="../README.md">英語版</a>が正です。</sub>
 </p>
 
 ---
 
 <p align="center">
-  <a href="https://ponytail.dev/soon"><img src="assets/waitlist-banner.png" alt="何かが近づいている。ウェイトリストに登録" width="760"></a>
+  <a href="https://ponytail.dev/soon"><img src="../assets/waitlist-banner.png" alt="何かが近づいている。ウェイトリストに登録" width="760"></a>
 </p>
 
 ## Ponytail で作られたもの
 
 <a href="https://theretriever.app">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/retriever-logo-dark.svg">
-    <img src="assets/retriever-logo-light.svg" height="128" alt="Retriever">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/retriever-logo-dark.svg">
+    <img src="../assets/retriever-logo-light.svg" height="128" alt="Retriever">
   </picture>
 </a>
 
@@ -62,7 +62,7 @@ Ponytail は、その人をあなたの AI エージェントの中に入れる�
 
 ## プロンプト
 
-Ponytail はひとつのプロンプトだ：[`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md)。ルールファイルを読むエージェント向けの短縮版は [`AGENTS.md`](AGENTS.md)。このリポジトリの残りは、すべてそのプロンプトをいろいろなエージェントに読み込ませるためのものだ。
+Ponytail はひとつのプロンプトだ：[`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md)。ルールファイルを読むエージェント向けの短縮版は [`AGENTS.md`](../AGENTS.md)。このリポジトリの残りは、すべてそのプロンプトをいろいろなエージェントに読み込ませるためのものだ。
 
 ## インストール
 
@@ -84,7 +84,7 @@ codex plugin add ponytail@ponytail
 
 そのあと Codex で `/hooks` を開き、二つのライフサイクルフックを信頼して、新しいスレッドを始める。
 
-**その他のエージェント：**[`AGENTS.md`](AGENTS.md) をプロジェクトにコピーするか、エージェントに [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) を skill としてインストールするよう頼む。Copilot、Cursor、OpenCode、Gemini などの手順（英語）：**[INSTALL.md](INSTALL.md)**。
+**その他のエージェント：**[`AGENTS.md`](../AGENTS.md) をプロジェクトにコピーするか、エージェントに [`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md) を skill としてインストールするよう頼む。Copilot、Cursor、OpenCode、Gemini などの手順（英語）：**[INSTALL.md](../INSTALL.md)**。
 
 これで終わり。彼なら満足するだろう。口には出さないが。
 
@@ -103,7 +103,7 @@ ponytail なら：
 <input type="date">
 ```
 
-生き残った例は [examples/](examples/) にもっとある。
+生き残った例は [examples/](../examples/) にもっとある。
 
 ## 仕組み
 
@@ -135,7 +135,7 @@ ponytail なら：
 | `/ponytail-gain` | ベンチマークで測定した効果（コード削減、コスト削減、速度向上）をスコアボードで表示する。 |
 | `/ponytail-help` | 上記コマンドのクイックリファレンス。 |
 
-コマンドには skill に対応したホストが必要だ（Claude Code、Codex、Devin CLI、OpenCode、Gemini、pi、Swival、Hermes Agent、Qoder、Grok Build）。Codex CLI と IDE 拡張では、プラグインの名前空間の下にある skill なので、`$ponytail:ponytail-review` のように呼び出す。[フック](INSTALL.md#cursor)を使う Cursor では `/ponytail` のレベル切り替えだけが使え、普通のメッセージとして入力する。指示だけのアダプター（Cursor のルールファイル、Windsurf、Cline、Copilot、Kiro、Antigravity）は、コマンドなしで常時有効なルールだけを読み込む。
+コマンドには skill に対応したホストが必要だ（Claude Code、Codex、Devin CLI、OpenCode、Gemini、pi、Hermes Agent、Qoder、Grok Build）。Codex CLI と IDE 拡張では、プラグインの名前空間の下にある skill なので、`$ponytail:ponytail-review` のように呼び出す。[フック](../INSTALL.md#cursor)を使う Cursor では `/ponytail` のレベル切り替えだけが使え、普通のメッセージとして入力する。指示だけのアダプター（Cursor のルールファイル、Windsurf、Cline、Copilot、Kiro、Antigravity）は、コマンドなしで常時有効なルールだけを読み込む。
 
 <a id="numbers"></a>
 ## 数字
@@ -143,7 +143,7 @@ ponytail なら：
 正直な測定とは、実際のエージェントに実際の仕事をさせることだ。ヘッドレスの Claude Code セッションが [tiangolo の full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)（実際の FastAPI + React リポジトリ）を編集し、残した `git diff` で採点する。機能チケット 12 件、同じエージェントを skill あり・なしで、n=4、Haiku 4.5。
 
 <p align="center">
-  <img src="assets/benchmark-agentic.svg" width="860" alt="各グループを skill なしのベースラインに対する割合で示したグラフ（行数、トークン、コスト、時間、Haiku 4.5）。ponytail はすべての指標で最も低い（行数 46%、トークン 78%、コスト 80%、時間 73%）。caveman はトークン、コスト、時間で 100% を超える。yagni-oneliner の行数は 67%。安全性（別の攻撃テスト）：ベースライン、caveman、ponytail は 100%、yagni-oneliner は 95%。">
+  <img src="../assets/benchmark-agentic.svg" width="860" alt="各グループを skill なしのベースラインに対する割合で示したグラフ（行数、トークン、コスト、時間、Haiku 4.5）。ponytail はすべての指標で最も低い（行数 46%、トークン 78%、コスト 80%、時間 73%）。caveman はトークン、コスト、時間で 100% を超える。yagni-oneliner の行数は 67%。安全性（別の攻撃テスト）：ベースライン、caveman、ponytail は 100%、yagni-oneliner は 95%。">
 </p>
 
 | skill なしのベースライン比 | 行数 | トークン | コスト | 時間 | 安全 |
@@ -152,7 +152,7 @@ ponytail なら：
 | caveman（簡潔な話し方の対照群） | -20% | +7% | +3% | +2% | 100% |
 | 「YAGNI + 一行」プロンプト | -33% | -14% | -21% | -30% | 95% |
 
-すべての指標を削減したのは ponytail だけで、削減しながら完全に安全だったのも ponytail だけだ。作り込みすぎの罠が本当にある場所ほど大きく減り（日付ピッカーは 404 行から 23 行、カラーピッカーは 287 行から 23 行。コンポーネントの代わりにネイティブの `<input>` を使うからだ）、もともと最小限のコードではほとんど減らない。完全な手法、タスクごとの表、制約：[benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md)。
+すべての指標を削減したのは ponytail だけで、削減しながら完全に安全だったのも ponytail だけだ。作り込みすぎの罠が本当にある場所ほど大きく減り（日付ピッカーは 404 行から 23 行、カラーピッカーは 287 行から 23 行。コンポーネントの代わりにネイティブの `<input>` を使うからだ）、もともと最小限のコードではほとんど減らない。完全な手法、タスクごとの表、制約：[benchmarks/results/2026-06-18-agentic.md](../benchmarks/results/2026-06-18-agentic.md)。
 
 <details>
 <summary><strong>以前の単発測定の数字（単独生成）</strong></summary>
@@ -160,7 +160,7 @@ ponytail なら：
 日常的なタスク 5 件、モデル 3 つ、グループ 3 つ（skill なし、[caveman](https://github.com/JuliusBrussee/caveman)、ponytail）、各 10 回実行、中央値を報告。プロンプト一つ、回答一つ、回答の行数を数える：
 
 <p align="center">
-  <img src="assets/benchmark-3model.svg" width="860" alt="Haiku、Sonnet、Opus におけるグループごとのコード行数の中央値">
+  <img src="../assets/benchmark-3model.svg" width="860" alt="Haiku、Sonnet、Opus におけるグループごとのコード行数の中央値">
 </p>
 
 ここでは**コード 80-94% 削減**という結果が出た。[#126](https://github.com/DietrichGebert/ponytail/issues/126) がもっともな指摘をしたとおり、何も付けていないベースラインのモデルは説明文や選択肢で回答を膨らませるので、その差の一部は会話形式のベースラインが生んだ見かけ上のものだ。上のエージェントでの数字が、修正済みで、根拠を示せる版だ。単発測定は `npx promptfoo eval -c benchmarks/promptfooconfig.yaml` で再現できる。
@@ -191,15 +191,15 @@ ponytail なら：
 <p align="center">
   <a href="https://greenpt.com/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/logo-greenpt-dark.svg">
-      <img src="assets/logo-greenpt.svg" width="260" alt="GreenPT">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-greenpt-dark.svg">
+      <img src="../assets/logo-greenpt.svg" width="260" alt="GreenPT">
     </picture>
   </a>
 </p>
 
 ## ライセンス
 
-[MIT](LICENSE)。動く中でいちばん短いライセンス。
+[MIT](../LICENSE)。動く中でいちばん短いライセンス。
 
 ## スター履歴
 

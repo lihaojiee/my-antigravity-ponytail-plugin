@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="Ponytail, 게으른 시니어 개발자">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-dark.png">
+    <img src="../assets/logo.png" width="220" alt="Ponytail, 게으른 시니어 개발자">
   </picture>
 </p>
 
@@ -35,22 +35,22 @@
 </p>
 
 <p align="center">
-  <sub><a href="README.md">English</a> &middot; <a href="README.es.md">Español</a> &middot; 한국어 &middot; <a href="README.zh-CN.md">简体中文</a> &middot; <a href="README.ja.md">日本語</a></sub><br>
-  <sub>영어 README의 번역본이다. 내용이 다르면 <a href="README.md">영어판</a>이 기준이다.</sub>
+  <sub><a href="../README.md">English</a> &middot; <a href="README.es.md">Español</a> &middot; 한국어 &middot; <a href="README.zh-CN.md">简体中文</a> &middot; <a href="README.ja.md">日本語</a></sub><br>
+  <sub>영어 README의 번역본이다. 내용이 다르면 <a href="../README.md">영어판</a>이 기준이다.</sub>
 </p>
 
 ---
 
 <p align="center">
-  <a href="https://ponytail.dev/soon"><img src="assets/waitlist-banner-ko.png" alt="곧 무언가가 온다, 대기 명단에 등록하기" width="760"></a>
+  <a href="https://ponytail.dev/soon"><img src="../assets/waitlist-banner-ko.png" alt="곧 무언가가 온다, 대기 명단에 등록하기" width="760"></a>
 </p>
 
 ## Ponytail로 이미 만든 것
 
 <a href="https://theretriever.app">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/retriever-logo-dark.svg">
-    <img src="assets/retriever-logo-light.svg" height="128" alt="Retriever">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/retriever-logo-dark.svg">
+    <img src="../assets/retriever-logo-light.svg" height="128" alt="Retriever">
   </picture>
 </a>
 
@@ -62,7 +62,7 @@ Ponytail은 그 사람을 당신의 AI 에이전트 안에 넣는다.
 
 ## 프롬프트
 
-Ponytail은 프롬프트 하나다: [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md). 규칙 파일을 읽는 에이전트용 압축판은 [`AGENTS.md`](AGENTS.md)다. 이 저장소의 나머지는 전부 그 프롬프트를 여러 에이전트에 넣기 위한 것이다.
+Ponytail은 프롬프트 하나다: [`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md). 규칙 파일을 읽는 에이전트용 압축판은 [`AGENTS.md`](../AGENTS.md)다. 이 저장소의 나머지는 전부 그 프롬프트를 여러 에이전트에 넣기 위한 것이다.
 
 ## 설치
 
@@ -84,7 +84,7 @@ codex plugin add ponytail@ponytail
 
 그다음 Codex에서 `/hooks`를 열어 라이프사이클 훅 두 개를 신뢰하고, 새 스레드를 시작한다.
 
-**그 밖의 에이전트:** [`AGENTS.md`](AGENTS.md)를 프로젝트에 복사하거나, 에이전트에게 [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md)를 스킬로 설치해 달라고 하면 된다. Copilot, Cursor, OpenCode, Gemini 등의 단계별 설치 방법(영어): **[INSTALL.md](INSTALL.md)**.
+**그 밖의 에이전트:** [`AGENTS.md`](../AGENTS.md)를 프로젝트에 복사하거나, 에이전트에게 [`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md)를 스킬로 설치해 달라고 하면 된다. Copilot, Cursor, OpenCode, Gemini 등의 단계별 설치 방법(영어): **[INSTALL.md](../INSTALL.md)**.
 
 이게 다다. 그 사람이라면 뿌듯해할 것이다. 말은 안 하겠지만.
 
@@ -103,7 +103,7 @@ ponytail을 쓰면:
 <input type="date">
 ```
 
-살아남은 예제는 [examples/](examples/)에 더 있다.
+살아남은 예제는 [examples/](../examples/)에 더 있다.
 
 ## 작동 방식
 
@@ -135,7 +135,7 @@ ponytail을 쓰면:
 | `/ponytail-gain` | 벤치마크에서 측정한 효과(코드 감소, 비용 감소, 속도 향상)를 점수판으로 보여 준다. |
 | `/ponytail-help` | 위 명령어들의 빠른 참고. |
 
-명령어는 스킬을 지원하는 호스트가 있어야 한다 (Claude Code, Codex, Devin CLI, OpenCode, Gemini, pi, Swival, Hermes Agent, Qoder, Grok Build). Codex CLI와 IDE 확장에서는 플러그인 네임스페이스 아래의 스킬이므로 `$ponytail:ponytail-review`처럼 부른다. [훅](INSTALL.md#cursor)을 쓰는 Cursor는 `/ponytail` 레벨 전환만 되고, 일반 메시지로 입력한다. 지시문만 쓰는 어댑터(Cursor 규칙 파일, Windsurf, Cline, Copilot, Kiro, Antigravity)는 명령어 없이 항상 켜진 규칙만 불러온다.
+명령어는 스킬을 지원하는 호스트가 있어야 한다 (Claude Code, Codex, Devin CLI, OpenCode, Gemini, pi, Hermes Agent, Qoder, Grok Build). Codex CLI와 IDE 확장에서는 플러그인 네임스페이스 아래의 스킬이므로 `$ponytail:ponytail-review`처럼 부른다. [훅](../INSTALL.md#cursor)을 쓰는 Cursor는 `/ponytail` 레벨 전환만 되고, 일반 메시지로 입력한다. 지시문만 쓰는 어댑터(Cursor 규칙 파일, Windsurf, Cline, Copilot, Kiro, Antigravity)는 명령어 없이 항상 켜진 규칙만 불러온다.
 
 <a id="numbers"></a>
 ## 수치
@@ -143,7 +143,7 @@ ponytail을 쓰면:
 정직한 측정은 실제 에이전트가 실제 일을 하는 것이다. 헤드리스 Claude Code 세션이 [tiangolo의 full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)(실제 FastAPI + React 저장소)를 고치고, 남긴 `git diff`로 점수를 매긴다. 기능 티켓 12개, 같은 에이전트를 스킬이 있을 때와 없을 때로, n=4, Haiku 4.5.
 
 <p align="center">
-  <img src="assets/benchmark-agentic.svg" width="860" alt="각 비교군을 스킬 없는 기준선 대비 백분율로 나타낸 그래프 (줄 수, 토큰, 비용, 시간, Haiku 4.5). ponytail이 모든 지표에서 가장 낮다 (줄 수 46%, 토큰 78%, 비용 80%, 시간 73%). caveman은 토큰, 비용, 시간에서 100%를 넘는다. yagni-oneliner 줄 수 67%. 안전성(별도 공격 테스트): 기준선, caveman, ponytail 100%, yagni-oneliner 95%.">
+  <img src="../assets/benchmark-agentic.svg" width="860" alt="각 비교군을 스킬 없는 기준선 대비 백분율로 나타낸 그래프 (줄 수, 토큰, 비용, 시간, Haiku 4.5). ponytail이 모든 지표에서 가장 낮다 (줄 수 46%, 토큰 78%, 비용 80%, 시간 73%). caveman은 토큰, 비용, 시간에서 100%를 넘는다. yagni-oneliner 줄 수 67%. 안전성(별도 공격 테스트): 기준선, caveman, ponytail 100%, yagni-oneliner 95%.">
 </p>
 
 | 스킬 없는 기준선 대비 | 줄 수 | 토큰 | 비용 | 시간 | 안전 |
@@ -152,7 +152,7 @@ ponytail을 쓰면:
 | caveman (간결한 말투 대조군) | -20% | +7% | +3% | +2% | 100% |
 | "YAGNI + 한 줄짜리" 프롬프트 | -33% | -14% | -21% | -30% | 95% |
 
-모든 지표를 줄이는 것은 ponytail뿐이고, 그러면서도 완전히 안전한 것도 ponytail뿐이다. 과잉 구축의 함정이 실제로 있는 곳에서 가장 많이 줄어들고 (날짜 선택기 404줄에서 23줄, 색상 선택기 287줄에서 23줄. 컴포넌트 대신 기본 `<input>`을 쓰기 때문이다), 이미 최소한인 코드에서는 거의 줄지 않는다. 전체 방법, 작업별 표, 한계: [benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md).
+모든 지표를 줄이는 것은 ponytail뿐이고, 그러면서도 완전히 안전한 것도 ponytail뿐이다. 과잉 구축의 함정이 실제로 있는 곳에서 가장 많이 줄어들고 (날짜 선택기 404줄에서 23줄, 색상 선택기 287줄에서 23줄. 컴포넌트 대신 기본 `<input>`을 쓰기 때문이다), 이미 최소한인 코드에서는 거의 줄지 않는다. 전체 방법, 작업별 표, 한계: [benchmarks/results/2026-06-18-agentic.md](../benchmarks/results/2026-06-18-agentic.md).
 
 <details>
 <summary><strong>예전 단발 측정 수치 (단독 생성)</strong></summary>
@@ -160,7 +160,7 @@ ponytail을 쓰면:
 일상적인 작업 5개, 모델 3개, 비교군 3개 (스킬 없음, [caveman](https://github.com/JuliusBrussee/caveman), ponytail), 10회 실행, 중앙값 보고. 프롬프트 하나, 응답 하나, 응답의 줄 수를 센다:
 
 <p align="center">
-  <img src="assets/benchmark-3model.svg" width="860" alt="Haiku, Sonnet, Opus에서 비교군별 코드 줄 수 중앙값">
+  <img src="../assets/benchmark-3model.svg" width="860" alt="Haiku, Sonnet, Opus에서 비교군별 코드 줄 수 중앙값">
 </p>
 
 여기서는 **코드 80-94% 감소**가 나왔다. [#126](https://github.com/DietrichGebert/ponytail/issues/126)이 정확히 지적했듯, 아무것도 붙이지 않은 기준선 모델은 응답을 설명과 선택지로 부풀리기 때문에, 그 차이의 일부는 대화형 기준선이 만든 착시다. 위의 에이전트 수치가 바로잡은, 방어할 수 있는 버전이다. 단발 측정은 `npx promptfoo eval -c benchmarks/promptfooconfig.yaml`로 재현할 수 있다.
@@ -191,15 +191,15 @@ ponytail을 쓰면:
 <p align="center">
   <a href="https://greenpt.com/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/logo-greenpt-dark.svg">
-      <img src="assets/logo-greenpt.svg" width="260" alt="GreenPT">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-greenpt-dark.svg">
+      <img src="../assets/logo-greenpt.svg" width="260" alt="GreenPT">
     </picture>
   </a>
 </p>
 
 ## 라이선스
 
-[MIT](LICENSE). 돌아가는 가장 짧은 라이선스.
+[MIT](../LICENSE). 돌아가는 가장 짧은 라이선스.
 
 ## 스타 기록
 

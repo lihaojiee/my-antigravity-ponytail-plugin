@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="Ponytail，偷懒的资深开发者">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-dark.png">
+    <img src="../assets/logo.png" width="220" alt="Ponytail，偷懒的资深开发者">
   </picture>
 </p>
 
@@ -35,22 +35,22 @@
 </p>
 
 <p align="center">
-  <sub><a href="README.md">English</a> &middot; <a href="README.es.md">Español</a> &middot; <a href="README.ko.md">한국어</a> &middot; 简体中文 &middot; <a href="README.ja.md">日本語</a></sub><br>
-  <sub>本文译自英文 README。如有出入，以<a href="README.md">英文版</a>为准。</sub>
+  <sub><a href="../README.md">English</a> &middot; <a href="README.es.md">Español</a> &middot; <a href="README.ko.md">한국어</a> &middot; 简体中文 &middot; <a href="README.ja.md">日本語</a></sub><br>
+  <sub>本文译自英文 README。如有出入，以<a href="../README.md">英文版</a>为准。</sub>
 </p>
 
 ---
 
 <p align="center">
-  <a href="https://ponytail.dev/soon"><img src="assets/waitlist-banner.png" alt="新东西即将到来，加入等候名单" width="760"></a>
+  <a href="https://ponytail.dev/soon"><img src="../assets/waitlist-banner.png" alt="新东西即将到来，加入等候名单" width="760"></a>
 </p>
 
 ## 已用 Ponytail 构建
 
 <a href="https://theretriever.app">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/retriever-logo-dark.svg">
-    <img src="assets/retriever-logo-light.svg" height="128" alt="Retriever">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/retriever-logo-dark.svg">
+    <img src="../assets/retriever-logo-light.svg" height="128" alt="Retriever">
   </picture>
 </a>
 
@@ -62,7 +62,7 @@ Ponytail 把他放进你的 AI 智能体里。
 
 ## 提示词
 
-Ponytail 就是一段提示词：[`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md)。给读取规则文件的智能体用的精简版是 [`AGENTS.md`](AGENTS.md)。仓库里的其他东西都只是为了把这段提示词装进不同的智能体。
+Ponytail 就是一段提示词：[`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md)。给读取规则文件的智能体用的精简版是 [`AGENTS.md`](../AGENTS.md)。仓库里的其他东西都只是为了把这段提示词装进不同的智能体。
 
 ## 安装
 
@@ -84,7 +84,7 @@ codex plugin add ponytail@ponytail
 
 然后在 Codex 里打开 `/hooks`，信任它的两个生命周期 hook，再开一个新线程。
 
-**其他任何智能体：**把 [`AGENTS.md`](AGENTS.md) 复制到你的项目里，或者让你的智能体把 [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) 安装为 skill。Copilot、Cursor、OpenCode、Gemini 等的分步安装说明（英文）：**[INSTALL.md](INSTALL.md)**。
+**其他任何智能体：**把 [`AGENTS.md`](../AGENTS.md) 复制到你的项目里，或者让你的智能体把 [`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md) 安装为 skill。Copilot、Cursor、OpenCode、Gemini 等的分步安装说明（英文）：**[INSTALL.md](../INSTALL.md)**。
 
 就这些。他会很满意。但他不会说出来。
 
@@ -103,7 +103,7 @@ codex plugin add ponytail@ponytail
 <input type="date">
 ```
 
-更多幸存的例子见 [examples/](examples/)。
+更多幸存的例子见 [examples/](../examples/)。
 
 ## 工作原理
 
@@ -135,7 +135,7 @@ codex plugin add ponytail@ponytail
 | `/ponytail-gain` | 以计分板形式显示基准测试测得的效果（更少代码、更低成本、更快速度）。 |
 | `/ponytail-help` | 上述命令的速查表。 |
 
-命令需要支持 skill 的宿主（Claude Code、Codex、Devin CLI、OpenCode、Gemini、pi、Swival、Hermes Agent、Qoder、Grok Build）。在 Codex CLI 和 IDE 扩展中，它们是插件命名空间下的 skill，用 `$ponytail:ponytail-review` 调用。使用 [hooks](INSTALL.md#cursor) 的 Cursor 只支持 `/ponytail` 级别切换，以普通消息输入。只有指令的适配器（Cursor 的规则文件、Windsurf、Cline、Copilot、Kiro、Antigravity）会加载始终生效的规则，但没有这些命令。
+命令需要支持 skill 的宿主（Claude Code、Codex、Devin CLI、OpenCode、Gemini、pi、Hermes Agent、Qoder、Grok Build）。在 Codex CLI 和 IDE 扩展中，它们是插件命名空间下的 skill，用 `$ponytail:ponytail-review` 调用。使用 [hooks](../INSTALL.md#cursor) 的 Cursor 只支持 `/ponytail` 级别切换，以普通消息输入。只有指令的适配器（Cursor 的规则文件、Windsurf、Cline、Copilot、Kiro、Antigravity）会加载始终生效的规则，但没有这些命令。
 
 <a id="numbers"></a>
 ## 数据
@@ -143,7 +143,7 @@ codex plugin add ponytail@ponytail
 诚实的测量方式是让真实的智能体做真实的工作：一个无界面的 Claude Code 会话修改 [tiangolo 的 full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)（一个真实的 FastAPI + React 仓库），按它留下的 `git diff` 打分。12 个功能工单，同一个智能体分别在启用和不启用该 skill 时运行，n=4，Haiku 4.5。
 
 <p align="center">
-  <img src="assets/benchmark-agentic.svg" width="860" alt="各组相对于无 skill 基线的百分比，涵盖代码行数、token、成本和时间（Haiku 4.5）。ponytail 在所有指标上都最低（行数 46%、token 78%、成本 80%、时间 73%）；caveman 在 token、成本和时间上超过 100%；yagni-oneliner 行数 67%。安全性（单独的对抗测试）：基线、caveman 和 ponytail 均为 100%，yagni-oneliner 为 95%。">
+  <img src="../assets/benchmark-agentic.svg" width="860" alt="各组相对于无 skill 基线的百分比，涵盖代码行数、token、成本和时间（Haiku 4.5）。ponytail 在所有指标上都最低（行数 46%、token 78%、成本 80%、时间 73%）；caveman 在 token、成本和时间上超过 100%；yagni-oneliner 行数 67%。安全性（单独的对抗测试）：基线、caveman 和 ponytail 均为 100%，yagni-oneliner 为 95%。">
 </p>
 
 | 相对于无 skill 基线 | 行数 | token | 成本 | 时间 | 安全 |
@@ -152,7 +152,7 @@ codex plugin add ponytail@ponytail
 | caveman（简洁话语对照组） | -20% | +7% | +3% | +2% | 100% |
 | "YAGNI + 一行代码" 提示词 | -33% | -14% | -21% | -30% | 95% |
 
-ponytail 是唯一在所有指标上都有削减的一组，也是唯一在削减的同时保持完全安全的一组。在真正存在过度构建陷阱的地方削减最多（日期选择器从 404 行降到 23 行，颜色选择器从 287 行降到 23 行，因为它直接用原生 `<input>` 而不是组件），而在本来就很精简的代码上几乎为零。完整方法、逐任务表格和局限性：[benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md)。
+ponytail 是唯一在所有指标上都有削减的一组，也是唯一在削减的同时保持完全安全的一组。在真正存在过度构建陷阱的地方削减最多（日期选择器从 404 行降到 23 行，颜色选择器从 287 行降到 23 行，因为它直接用原生 `<input>` 而不是组件），而在本来就很精简的代码上几乎为零。完整方法、逐任务表格和局限性：[benchmarks/results/2026-06-18-agentic.md](../benchmarks/results/2026-06-18-agentic.md)。
 
 <details>
 <summary><strong>早期的单次生成数据（孤立生成）</strong></summary>
@@ -160,7 +160,7 @@ ponytail 是唯一在所有指标上都有削减的一组，也是唯一在削�
 5 个日常任务，3 个模型，3 组（无 skill、[caveman](https://github.com/JuliusBrussee/caveman)、ponytail），每组运行 10 次，报告中位数。一个提示，一次回答，统计回答的行数：
 
 <p align="center">
-  <img src="assets/benchmark-3model.svg" width="860" alt="Haiku、Sonnet 和 Opus 上各组代码行数的中位数">
+  <img src="../assets/benchmark-3model.svg" width="860" alt="Haiku、Sonnet 和 Opus 上各组代码行数的中位数">
 </p>
 
 这里显示**代码减少 80-94%**。[#126](https://github.com/DietrichGebert/ponytail/issues/126) 很公道地指出，什么都不加的基线模型会用说明文字和多种选项把回答撑大，所以这个差距部分是对话式基线造成的假象。上面的智能体数据才是修正过的、站得住脚的版本。用 `npx promptfoo eval -c benchmarks/promptfooconfig.yaml` 可以复现单次生成的测试。
@@ -191,15 +191,15 @@ ponytail 是唯一在所有指标上都有削减的一组，也是唯一在削�
 <p align="center">
   <a href="https://greenpt.com/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/logo-greenpt-dark.svg">
-      <img src="assets/logo-greenpt.svg" width="260" alt="GreenPT">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-greenpt-dark.svg">
+      <img src="../assets/logo-greenpt.svg" width="260" alt="GreenPT">
     </picture>
   </a>
 </p>
 
 ## 许可证
 
-[MIT](LICENSE)。能用的最短许可证。
+[MIT](../LICENSE)。能用的最短许可证。
 
 ## Star 历史
 

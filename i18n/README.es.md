@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
-    <img src="assets/logo.png" width="220" alt="Ponytail, el senior dev perezoso">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-dark.png">
+    <img src="../assets/logo.png" width="220" alt="Ponytail, el senior dev perezoso">
   </picture>
 </p>
 
@@ -35,22 +35,22 @@
 </p>
 
 <p align="center">
-  <sub><a href="README.md">English</a> &middot; Español &middot; <a href="README.ko.md">한국어</a> &middot; <a href="README.zh-CN.md">简体中文</a> &middot; <a href="README.ja.md">日本語</a></sub><br>
-  <sub>Traducción del README en inglés. Si algo no coincide, vale la <a href="README.md">versión en inglés</a>.</sub>
+  <sub><a href="../README.md">English</a> &middot; Español &middot; <a href="README.ko.md">한국어</a> &middot; <a href="README.zh-CN.md">简体中文</a> &middot; <a href="README.ja.md">日本語</a></sub><br>
+  <sub>Traducción del README en inglés. Si algo no coincide, vale la <a href="../README.md">versión en inglés</a>.</sub>
 </p>
 
 ---
 
 <p align="center">
-  <a href="https://ponytail.dev/soon"><img src="assets/waitlist-banner-es.png" alt="Algo se acerca, únete a la lista de espera" width="760"></a>
+  <a href="https://ponytail.dev/soon"><img src="../assets/waitlist-banner-es.png" alt="Algo se acerca, únete a la lista de espera" width="760"></a>
 </p>
 
 ## Ya construido con Ponytail
 
 <a href="https://theretriever.app">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/retriever-logo-dark.svg">
-    <img src="assets/retriever-logo-light.svg" height="128" alt="Retriever">
+    <source media="(prefers-color-scheme: dark)" srcset="../assets/retriever-logo-dark.svg">
+    <img src="../assets/retriever-logo-light.svg" height="128" alt="Retriever">
   </picture>
 </a>
 
@@ -62,7 +62,7 @@ Ponytail lo mete dentro de tu agente de IA.
 
 ## El prompt
 
-Ponytail es un solo prompt: [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md). La versión compacta, para agentes que leen un archivo de reglas, es [`AGENTS.md`](AGENTS.md). Todo lo demás en este repo sirve para cargar ese prompt en distintos agentes.
+Ponytail es un solo prompt: [`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md). La versión compacta, para agentes que leen un archivo de reglas, es [`AGENTS.md`](../AGENTS.md). Todo lo demás en este repo sirve para cargar ese prompt en distintos agentes.
 
 ## Instalación
 
@@ -84,7 +84,7 @@ codex plugin add ponytail@ponytail
 
 Después abre `/hooks` en Codex, confía en sus dos hooks de ciclo de vida y empieza un hilo nuevo.
 
-**Cualquier otro agente:** copia [`AGENTS.md`](AGENTS.md) en tu proyecto, o pídele a tu agente que instale [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) como skill. Paso a paso para Copilot, Cursor, OpenCode, Gemini y el resto (en inglés): **[INSTALL.md](INSTALL.md)**.
+**Cualquier otro agente:** copia [`AGENTS.md`](../AGENTS.md) en tu proyecto, o pídele a tu agente que instale [`skills/ponytail/SKILL.md`](../skills/ponytail/SKILL.md) como skill. Paso a paso para Copilot, Cursor, OpenCode, Gemini y el resto (en inglés): **[INSTALL.md](../INSTALL.md)**.
 
 Eso era todo. Estaría orgulloso. No lo va a decir.
 
@@ -103,7 +103,7 @@ Con ponytail:
 <input type="date">
 ```
 
-Más supervivientes en [examples/](examples/).
+Más supervivientes en [examples/](../examples/).
 
 ## Cómo funciona
 
@@ -135,7 +135,7 @@ Perezoso, no negligente: la validación en los límites de confianza, el manejo 
 | `/ponytail-gain` | Muestra el marcador de impacto medido (menos código, menos coste, más velocidad) del benchmark. |
 | `/ponytail-help` | Referencia rápida de los comandos anteriores. |
 
-Los comandos necesitan un host con soporte de skills (Claude Code, Codex, Devin CLI, OpenCode, Gemini, pi, Swival, Hermes Agent, Qoder, Grok Build). En Codex CLI y en la extensión del IDE son skills dentro del espacio de nombres del plugin; se invocan con `$ponytail:ponytail-review`. Cursor con los [hooks](INSTALL.md#cursor) solo tiene el cambio de nivel con `/ponytail`, escrito como mensaje normal. Los adaptadores de solo instrucciones (el archivo de reglas de Cursor, Windsurf, Cline, Copilot, Kiro, Antigravity) cargan las reglas siempre activas, sin los comandos.
+Los comandos necesitan un host con soporte de skills (Claude Code, Codex, Devin CLI, OpenCode, Gemini, pi, Hermes Agent, Qoder, Grok Build). En Codex CLI y en la extensión del IDE son skills dentro del espacio de nombres del plugin; se invocan con `$ponytail:ponytail-review`. Cursor con los [hooks](../INSTALL.md#cursor) solo tiene el cambio de nivel con `/ponytail`, escrito como mensaje normal. Los adaptadores de solo instrucciones (el archivo de reglas de Cursor, Windsurf, Cline, Copilot, Kiro, Antigravity) cargan las reglas siempre activas, sin los comandos.
 
 <a id="numbers"></a>
 ## Números
@@ -143,7 +143,7 @@ Los comandos necesitan un host con soporte de skills (Claude Code, Codex, Devin 
 La medición honesta es un agente real haciendo trabajo real: una sesión de Claude Code sin interfaz editando [la full-stack-fastapi-template de tiangolo](https://github.com/fastapi/full-stack-fastapi-template) (un repo real de FastAPI + React), puntuada por el `git diff` que deja. Doce tickets de funcionalidad, el mismo agente con y sin el skill, n=4, Haiku 4.5.
 
 <p align="center">
-  <img src="assets/benchmark-agentic.svg" width="860" alt="Cada variante como porcentaje del baseline sin skill en líneas, tokens, coste y tiempo (Haiku 4.5). ponytail es el más bajo en todas las métricas (líneas 46%, tokens 78%, coste 80%, tiempo 73%); caveman supera el 100% en tokens, coste y tiempo; yagni-oneliner líneas 67%. Seguridad, prueba adversarial aparte: baseline, caveman y ponytail 100%, yagni-oneliner 95%.">
+  <img src="../assets/benchmark-agentic.svg" width="860" alt="Cada variante como porcentaje del baseline sin skill en líneas, tokens, coste y tiempo (Haiku 4.5). ponytail es el más bajo en todas las métricas (líneas 46%, tokens 78%, coste 80%, tiempo 73%); caveman supera el 100% en tokens, coste y tiempo; yagni-oneliner líneas 67%. Seguridad, prueba adversarial aparte: baseline, caveman y ponytail 100%, yagni-oneliner 95%.">
 </p>
 
 | frente al baseline sin skill | líneas | tokens | coste | tiempo | seguro |
@@ -152,7 +152,7 @@ La medición honesta es un agente real haciendo trabajo real: una sesión de Cla
 | caveman (control de prosa escueta) | -20% | +7% | +3% | +2% | 100% |
 | prompt "YAGNI + one-liners" | -33% | -14% | -21% | -30% | 95% |
 
-ponytail es la única variante que recorta todas las métricas, y la única que sigue siendo totalmente segura mientras lo hace. El recorte es mayor donde hay una trampa real de sobreconstrucción (selector de fechas de 404 a 23 líneas, selector de color de 287 a 23, porque usa un `<input>` nativo en vez de un componente) y casi cero en código que ya es mínimo. Método completo, tablas por tarea y limitaciones: [benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md).
+ponytail es la única variante que recorta todas las métricas, y la única que sigue siendo totalmente segura mientras lo hace. El recorte es mayor donde hay una trampa real de sobreconstrucción (selector de fechas de 404 a 23 líneas, selector de color de 287 a 23, porque usa un `<input>` nativo en vez de un componente) y casi cero en código que ya es mínimo. Método completo, tablas por tarea y limitaciones: [benchmarks/results/2026-06-18-agentic.md](../benchmarks/results/2026-06-18-agentic.md).
 
 <details>
 <summary><strong>Números anteriores de un solo disparo (generación aislada)</strong></summary>
@@ -160,7 +160,7 @@ ponytail es la única variante que recorta todas las métricas, y la única que 
 Cinco tareas cotidianas, tres modelos, tres variantes (sin skill, [caveman](https://github.com/JuliusBrussee/caveman), ponytail), diez ejecuciones, se reporta la mediana. Un prompt, una respuesta, contando las líneas de la respuesta:
 
 <p align="center">
-  <img src="assets/benchmark-3model.svg" width="860" alt="Mediana de líneas de código por variante en Haiku, Sonnet y Opus">
+  <img src="../assets/benchmark-3model.svg" width="860" alt="Mediana de líneas de código por variante en Haiku, Sonnet y Opus">
 </p>
 
 Esto mostraba **80-94% menos código**. [#126](https://github.com/DietrichGebert/ponytail/issues/126) señaló con razón que el baseline del modelo sin nada rellena su respuesta con prosa y opciones, así que esa diferencia es en parte un artefacto del baseline conversacional. Los números agénticos de arriba son la versión corregida y defendible. Reproduce la ejecución de un solo disparo con `npx promptfoo eval -c benchmarks/promptfooconfig.yaml`.
@@ -191,15 +191,15 @@ Sabes perfectamente por qué.
 <p align="center">
   <a href="https://greenpt.com/">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/logo-greenpt-dark.svg">
-      <img src="assets/logo-greenpt.svg" width="260" alt="GreenPT">
+      <source media="(prefers-color-scheme: dark)" srcset="../assets/logo-greenpt-dark.svg">
+      <img src="../assets/logo-greenpt.svg" width="260" alt="GreenPT">
     </picture>
   </a>
 </p>
 
 ## Licencia
 
-[MIT](LICENSE). La licencia más corta que funciona.
+[MIT](../LICENSE). La licencia más corta que funciona.
 
 ## Historial de estrellas
 
