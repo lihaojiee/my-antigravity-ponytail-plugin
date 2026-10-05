@@ -12,6 +12,7 @@ const root = path.join(__dirname, '..');
 // paths pass, paths carrying shell metacharacters are rejected so they never get
 // embedded in a shell command.
 const { DEFAULT_MODE, getDefaultMode, isShellSafe, writeDefaultMode } = require('../hooks/ponytail-config');
+const { getPonytailInstructions } = require('../hooks/ponytail-instructions');
 assert.equal(isShellSafe('C:\\Users\\x\\.claude\\plugins\\ponytail\\hooks\\ponytail-statusline.ps1'), true);
 assert.equal(isShellSafe('/home/u/.claude/plugins/ponytail/hooks/ponytail-statusline.sh'), true);
 assert.equal(isShellSafe('/tmp/a"&calc.exe&"/x.sh'), false);
@@ -55,6 +56,43 @@ process.on('exit', () => fs.rmSync(temp, { recursive: true, force: true }));
 const home = path.join(temp, 'home');
 const pluginData = path.join(temp, 'plugin-data');
 fs.mkdirSync(home, { recursive: true });
+
+// Off-mode SessionStart must clear stale state without emitting model-visible
+// output on any harness.
+for (const { label, env, statePath } of [
+  {
+    label: 'Claude',
+    env: { HOME: home, USERPROFILE: home, PONYTAIL_DEFAULT_MODE: 'off' },
+    statePath: path.join(home, '.claude', '.ponytail-active'),
+  },
+  {
+    label: 'Codex',
+    env: {
+      HOME: home,
+      USERPROFILE: home,
+      PLUGIN_DATA: pluginData,
+      PONYTAIL_DEFAULT_MODE: 'off',
+    },
+    statePath: path.join(pluginData, '.ponytail-active'),
+  },
+  {
+    label: 'Copilot',
+    env: {
+      HOME: home,
+      USERPROFILE: home,
+      COPILOT_PLUGIN_DATA: path.join(temp, 'copilot-off-data'),
+      PONYTAIL_DEFAULT_MODE: 'off',
+    },
+    statePath: path.join(temp, 'copilot-off-data', '.ponytail-active'),
+  },
+]) {
+  fs.mkdirSync(path.dirname(statePath), { recursive: true });
+  fs.writeFileSync(statePath, 'full');
+  const offResult = run('ponytail-activate.js', env);
+  assert.equal(offResult.status, 0, offResult.stderr);
+  assert.equal(offResult.stdout, '', `${label} SessionStart must stay silent when ponytail is off`);
+  assert.equal(fs.existsSync(statePath), false, `${label} stale mode state must be cleared`);
+}
 
 function collectManifestCommands(file, field) {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
@@ -151,6 +189,22 @@ assert.match(
   /level: lite/,
   'mode still surfaces via the hook context line',
 );
+// The switch carries the new level's ruleset: the SessionStart one is filtered
+// to the start level, and `$ponytail lite` does not load the skill body.
+assert.ok(output.hookSpecificOutput.additionalContext.endsWith(getPonytailInstructions('lite')));
+
+for (const [prompt, mode] of [
+  ['$ponytail full', 'full'],
+  ['@ponytail ultra', 'ultra'],
+  ['/ponytail:ponytail lite', 'lite'],
+]) {
+  result = run('ponytail-mode-tracker.js', codexEnv, JSON.stringify({ prompt }));
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.readFileSync(codexState, 'utf8'), mode);
+  output = JSON.parse(result.stdout);
+  assert.equal(output.hookSpecificOutput.hookEventName, 'UserPromptSubmit');
+  assert.ok(output.hookSpecificOutput.additionalContext.endsWith(getPonytailInstructions(mode)));
+}
 
 // Querying bare @ponytail should report the active level ('lite') without resetting it to default ('ultra')
 result = run(
