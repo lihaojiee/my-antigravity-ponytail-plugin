@@ -139,6 +139,8 @@ The Claude Code and Codex plugins (and the Cursor hooks) run two tiny Node.js li
 
 Same steps in the Claude Code Desktop app's Code tab: type the two `/plugin` commands above into the prompt box, or click the **+** button next to it, choose **Plugins** → **Add plugin** to browse your configured marketplaces, and manage marketplaces from **Customize** in the sidebar.
 
+CodeBuddy installs the same plugin with the same two `/plugin` commands and switches levels with `/ponytail ultra` and so on; it has no subagent injection.
+
 ### Codex
 
 ```bash
@@ -207,6 +209,8 @@ gemini extensions install https://github.com/DietrichGebert/ponytail
 
 Loads the ruleset as always-on context every session and registers the `/ponytail` commands; the `skills/` ship too, activated when a task needs them.
 The Gemini adapter intentionally does not ship a root `hooks/hooks.json`: Gemini auto-loads that path, while Ponytail's lifecycle hooks use Claude/Codex event names.
+
+Qwen Code installs the same extension: `qwen extensions install DietrichGebert/ponytail:ponytail`. It loads `AGENTS.md` as always-on context and registers the `/ponytail` commands and the skills; levels don't persist across sessions, since the lifecycle hooks are not used.
 
 ### Qoder
 
@@ -286,6 +290,14 @@ Start a new session (or reload plugins). Skills show as `/ponytail`, `/ponytail-
 ### ZCode
 
 ZCode loads Claude Code plugins. Open **Settings → Plugins**, choose **Create → Add marketplace**, enter `DietrichGebert/ponytail`, then install ponytail from the Personal tab. The ruleset arrives at session start and `/ponytail` level switches work, like in Claude Code (needs ponytail 4.10.3 or later and `node` on your PATH). ZCode has no `SubagentStart` event, so subagents run without the ruleset.
+
+### Goose
+
+```bash
+goose plugin install https://github.com/DietrichGebert/ponytail.git
+```
+
+That imports the six skills as `ponytail:ponytail`, `ponytail:ponytail-review` and so on. For the always-on rules, copy [`AGENTS.md`](AGENTS.md) to `~/.agents/AGENTS.md` (or into your project; `~/.config/goose/.goosehints` works too). Goose has no lifecycle hooks, so the levels don't persist.
 
 ### Cursor
 
