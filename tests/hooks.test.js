@@ -316,7 +316,8 @@ assert.ok(
 // update, so the nudge points at a copy of the script in the config dir.
 const copyPath = path.join(customConfigDir, process.platform === 'win32' ? 'ponytail-statusline.ps1' : 'ponytail-statusline.sh');
 assert.ok(fs.existsSync(copyPath), 'nudge must copy the statusline script into the config dir (#1032)');
-assert.ok(result.stdout.includes(copyPath), 'nudge must point at the config-dir copy, not the plugin cache (#1032)');
+// The snippet is JSON-encoded, which doubles Windows backslashes.
+assert.ok(result.stdout.includes(JSON.stringify(copyPath).slice(1, -1)), 'nudge must point at the config-dir copy, not the plugin cache (#1032)');
 assert.ok(!result.stdout.includes(path.join(root, 'hooks')), 'nudge must not point into the versioned plugin dir (#1032)');
 // Later sessions refresh the copy, so script fixes ship with plugin updates.
 fs.writeFileSync(copyPath, 'old');
@@ -933,6 +934,30 @@ assert.equal(
   fs.unlinkSync(bareFlag);
   bare({ ...bareEnv, PONYTAIL_DEFAULT_MODE: 'off' });
   assert.equal(fs.readFileSync(bareFlag, 'utf8'), 'full', 'an off default still switches on at full');
+}
+
+// Compaction re-runs SessionStart inside the same conversation: it must keep the
+// live level, and keep ponytail off after "stop ponytail", not reset to the default.
+{
+  const compactHome = path.join(temp, 'compact-home');
+  const compactFlag = path.join(compactHome, '.claude', '.ponytail-active');
+  const compactEnv = { HOME: compactHome, USERPROFILE: compactHome };
+  const start = (source) => run('ponytail-activate.js', compactEnv, JSON.stringify({ source }));
+  const compact = () => start('compact');
+
+  start('startup');
+  run('ponytail-mode-tracker.js', compactEnv, JSON.stringify({ prompt: '/ponytail ultra' }));
+  assert.match(compact().stdout, /PONYTAIL MODE ACTIVE — level: ultra/);
+  assert.equal(fs.readFileSync(compactFlag, 'utf8'), 'ultra', 'compaction must keep the live level');
+
+  run('ponytail-mode-tracker.js', compactEnv, JSON.stringify({ prompt: 'stop ponytail' }));
+  assert.equal(compact().stdout, '', 'compaction must not switch a stopped session back on');
+  assert.equal(fs.existsSync(compactFlag), false);
+
+  // Every other source still starts at the default level.
+  for (const source of ['startup', 'resume', 'clear']) {
+    assert.match(start(source).stdout, /PONYTAIL MODE ACTIVE — level: full/, `${source} must start at the default level`);
+  }
 }
 
 console.log('hook compatibility checks passed');
